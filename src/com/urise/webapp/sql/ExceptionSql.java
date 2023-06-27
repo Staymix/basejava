@@ -7,6 +7,9 @@ import org.postgresql.util.PSQLException;
 import java.sql.SQLException;
 
 public class ExceptionSql {
+    private ExceptionSql() {
+    }
+
     public static StorageException returnException(SQLException e) {
         if (e instanceof PSQLException) {
             if (e.getSQLState().equals("23505")) {
