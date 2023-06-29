@@ -7,6 +7,7 @@ import com.urise.webapp.sql.SqlHelper;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +71,7 @@ public class SqlStorage implements Storage {
                     }
                     Resume r = new Resume(rs.getString("uuid"), rs.getString("full_name"));
                     while (rs.next()) {
-                        r.addContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
+                        addContact(rs, r);
                     }
                     return r;
                 });
@@ -78,15 +79,13 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(String uuid) {
-        sqlHelper.execute("DELETE FROM resume " +
-                        "            WHERE uuid =?",
-                ps -> {
-                    ps.setString(1, uuid);
-                    if (ps.executeUpdate() == 0) {
-                        throw new NotExistStorageException(uuid);
-                    }
-                    return null;
-                });
+        sqlHelper.execute("DELETE FROM resume WHERE uuid =?", ps -> {
+            ps.setString(1, uuid);
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException(uuid);
+            }
+            return null;
+        });
     }
 
     @Override
@@ -97,34 +96,30 @@ public class SqlStorage implements Storage {
                         "                 ON r.uuid = c.resume_uuid",
                 ps -> {
                     ResultSet rs = ps.executeQuery();
-                    List<Resume> resumes = new ArrayList<>();
-                    Resume r = new Resume();
-                    String uuid = "";
+                    Map<String, Resume> map = new LinkedHashMap<>();
                     while (rs.next()) {
-                        uuid = rs.getString("uuid");
-                        if (!uuid.equals(r.getUuid())) {
+                        String uuid = rs.getString("uuid");
+                        Resume r = map.get(uuid);
+                        if (r == null) {
                             r = new Resume(uuid, rs.getString("full_name"));
-                            resumes.add(r);
+                            map.put(uuid, r);
                         }
-                        r.addContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
+                        addContact(rs, r);
                     }
-                    return resumes;
+                    return new ArrayList<>(map.values());
                 });
     }
 
     @Override
     public int size() {
-        return sqlHelper.execute("SELECT count(*) " +
-                        "               FROM resume",
-                ps -> {
-                    ResultSet rs = ps.executeQuery();
-                    return rs.next() ? rs.getInt("count") : 0;
-                });
+        return sqlHelper.execute("SELECT count(*) FROM resume", ps -> {
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? rs.getInt("count") : 0;
+        });
     }
 
     private void deleteContact(Connection conn, Resume r) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact " +
-                "                                                    WHERE resume_uuid=?")) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid=?")) {
             ps.setString(1, r.getUuid());
             ps.execute();
         }
@@ -140,6 +135,13 @@ public class SqlStorage implements Storage {
                 ps.addBatch();
             }
             ps.executeBatch();
+        }
+    }
+
+    private void addContact(ResultSet rs, Resume r) throws SQLException {
+        String value = rs.getString("value");
+        if (value != null) {
+            r.addContact(ContactType.valueOf(rs.getString("type")), value);
         }
     }
 }
