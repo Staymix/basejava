@@ -1,7 +1,6 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.model.ContactType;
-import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.*;
 
 public class ResumeTestData {
     protected static Resume createResume(String uuid, String fullName) {
@@ -9,11 +8,11 @@ public class ResumeTestData {
         resume.addContact(ContactType.PHONE_NUMBER, "1234567890");
         resume.addContact(ContactType.EMAIL, "qwert@qw");
         resume.addContact(ContactType.SKYPE, "qwert");
-        /*resume.addSection(SectionType.PERSONAL, new TextSection("Аналитический склад ума"));
+        resume.addSection(SectionType.PERSONAL, new TextSection("Аналитический склад ума"));
         resume.addSection(SectionType.OBJECTIVE, new TextSection("Ведущий стажировок"));
         resume.addSection(SectionType.ACHIEVEMENT, new ListSection("Организация команды", "С 2013 года"));
         resume.addSection(SectionType.QUALIFICATIONS, new ListSection("JEE AS", "Version control"));
-        resume.addSection(SectionType.EXPERIENCE, new OrganizationSection(
+        /*resume.addSection(SectionType.EXPERIENCE, new OrganizationSection(
                 new Organization("Wrike",
                         new Period(2013, Month.MARCH, 2013, Month.MAY, "Старший разработчик",
                                 "Проектирование и разработка"))));

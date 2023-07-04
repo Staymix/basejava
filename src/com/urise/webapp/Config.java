@@ -10,7 +10,13 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Config {
-    protected static final File PROPS = new File(".\\config\\resumes.properties");
+
+    static {
+        System.setProperty("sqlProperty", "D:\\soft\\java\\study\\basejava\\config\\resumes.properties");
+    }
+
+    private static final String variableName = "sqlProperty";
+    protected static final File PROPS = new File(System.getProperty(variableName));
     private static final Config INSTANCE = new Config();
     private final File storageDir;
     private final Storage storage;
