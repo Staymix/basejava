@@ -39,4 +39,9 @@ public class TextSection extends AbstractSection {
     public int hashCode() {
         return content != null ? content.hashCode() : 0;
     }
+
+    @Override
+    public String getType() {
+        return "TextSection";
+    }
 }

@@ -44,10 +44,10 @@ public class ResumeServlet extends HttpServlet {
             out.write("<tr>\n" +
                     "            <td>" + resume.getUuid() + "</td>\n" +
                     "            <td>" + resume.getFullName() + "</td>\n" +
-                    "        </tr>");
+                    "        </tr>\n");
         }
         out.write("""
-                 </table>
+                </table>
                 </body>
                 </html>""");
     }

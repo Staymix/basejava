@@ -166,16 +166,13 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, AbstractSection> e : r.getSections().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                AbstractSection as = e.getValue();
-                if (as instanceof TextSection) {
-                    ps.setString(3, ((TextSection) as).getText());
-                } else if (as instanceof ListSection) {
-                    StringBuilder sb = new StringBuilder();
-                    for (String s : ((ListSection) as).getList()) {
-                        sb.append(s).append("\n");
-                    }
-                    ps.setString(3, String.valueOf(sb));
-                }
+                AbstractSection section = e.getValue();
+                String value = switch (section.getType()) {
+                    case "ListSection" -> String.join("\n", ((ListSection) section).getList());
+                    case "TextSection" -> ((TextSection) section).getText();
+                    default -> null;
+                };
+                ps.setString(3, value);
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -194,13 +191,10 @@ public class SqlStorage implements Storage {
         if (value != null) {
             SectionType type = SectionType.valueOf(rs.getString("type"));
             List<String> list = parseStringToList(value);
-            AbstractSection as;
-            if (list.size() > 1) {
-                as = new ListSection(list);
-            } else {
-                as = new TextSection(value);
+            switch (list.size()) {
+                case 1 -> r.addSection(type, new TextSection(value));
+                default -> r.addSection(type, new ListSection(list));
             }
-            r.addSection(type, as);
         }
     }
 
