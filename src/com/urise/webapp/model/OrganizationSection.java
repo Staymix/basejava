@@ -51,9 +51,4 @@ public class OrganizationSection extends AbstractSection {
     public int hashCode() {
         return organizationList != null ? organizationList.hashCode() : 0;
     }
-
-    @Override
-    public String getType() {
-        return "OrganizationSection";
-    }
 }

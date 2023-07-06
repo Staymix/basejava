@@ -45,9 +45,4 @@ public class ListSection extends AbstractSection {
                 "list=" + list +
                 '}';
     }
-
-    @Override
-    public String getType() {
-        return "ListSection";
-    }
 }

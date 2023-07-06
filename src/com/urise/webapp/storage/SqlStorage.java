@@ -166,13 +166,11 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, AbstractSection> e : r.getSections().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                AbstractSection section = e.getValue();
-                String value = switch (section.getType()) {
-                    case "ListSection" -> String.join("\n", ((ListSection) section).getList());
-                    case "TextSection" -> ((TextSection) section).getText();
-                    default -> null;
-                };
-                ps.setString(3, value);
+                switch (e.getKey()) {
+                    case OBJECTIVE, PERSONAL -> ps.setString(3, ((TextSection) e.getValue()).getText());
+                    case ACHIEVEMENT, QUALIFICATIONS ->
+                            ps.setString(3, String.join("\n", ((ListSection) e.getValue()).getList()));
+                }
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -190,16 +188,10 @@ public class SqlStorage implements Storage {
         String value = rs.getString("value");
         if (value != null) {
             SectionType type = SectionType.valueOf(rs.getString("type"));
-            List<String> list = parseStringToList(value);
-            switch (list.size()) {
-                case 1 -> r.addSection(type, new TextSection(value));
-                default -> r.addSection(type, new ListSection(list));
+            switch (type) {
+                case OBJECTIVE, PERSONAL -> r.addSection(type, new TextSection(value));
+                case ACHIEVEMENT, QUALIFICATIONS -> r.addSection(type, new ListSection(value.split("\n")));
             }
         }
-    }
-
-    private List<String> parseStringToList(String value) {
-        String[] lines = value.split("\n");
-        return new ArrayList<>(Arrays.asList(lines));
     }
 }
