@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.*;
 import com.urise.webapp.sql.SqlHelper;
+import com.urise.webapp.util.JsonParser;
 
 import java.sql.*;
 import java.util.*;
@@ -11,6 +12,11 @@ public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
@@ -100,7 +106,6 @@ public class SqlStorage implements Storage {
                             "                                                FROM resume " +
                             "                                            ORDER BY full_name, uuid")) {
                         ResultSet rs = ps.executeQuery();
-
                         while (rs.next()) {
                             String uuid = rs.getString("uuid");
                             map.put(uuid, new Resume(uuid, rs.getString("full_name")));
@@ -170,6 +175,8 @@ public class SqlStorage implements Storage {
                     case OBJECTIVE, PERSONAL -> ps.setString(3, ((TextSection) e.getValue()).getText());
                     case ACHIEVEMENT, QUALIFICATIONS ->
                             ps.setString(3, String.join("\n", ((ListSection) e.getValue()).getList()));
+                    case EXPERIENCE, EDUCATION ->
+                        ps.setString(3, JsonParser.write(e.getValue(), AbstractSection.class));
                 }
                 ps.addBatch();
             }
@@ -191,6 +198,7 @@ public class SqlStorage implements Storage {
             switch (type) {
                 case OBJECTIVE, PERSONAL -> r.addSection(type, new TextSection(value));
                 case ACHIEVEMENT, QUALIFICATIONS -> r.addSection(type, new ListSection(value.split("\n")));
+                case EXPERIENCE, EDUCATION -> r.addSection(type, JsonParser.read(value, AbstractSection.class));
             }
         }
     }
