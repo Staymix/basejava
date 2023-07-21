@@ -12,19 +12,19 @@
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
+    <a href="resume?action=create">Добавить резюме</a>
     <table border="1" cellpadding="8" cellspacing="0">
         <tr>
-            <th>Имя</th>
-            <th>Email</th>
-            <th>Delete</th>
-            <th>Edit</th>
+            <th>ФИО</th>
+            <th>Контакты</th>
+            <th>Удалить</th>
+            <th>Редактировать</th>
         </tr>
-        <c:forEach items="${resumes}" var="resume">
+        <c:forEach var="resume" items="${resumes}" >
             <jsp:useBean id="resume" type="com.urise.webapp.model.Resume"/>
             <tr>
                 <td><a href="resume?uuid=${resume.uuid}&action=view">${resume.fullName}</a></td>
-                <td><%=ContactType.EMAIL.toHtml(resume.getContact(ContactType.EMAIL))%>
-                </td>
+                <td><%=ContactType.EMAIL.toHtml(resume.getContact(ContactType.EMAIL))%></td>
                 <td><a href="resume?uuid=${resume.uuid}&action=delete"><img src="img/delete.png"></a></td>
                 <td><a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></td>
             </tr>

@@ -10,6 +10,7 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
+    public static final Organization EMPTY = new Organization("", Period.EMPTY);
     public String name;
     private List<Period> periods;
 

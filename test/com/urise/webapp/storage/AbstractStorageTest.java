@@ -4,6 +4,7 @@ import com.urise.webapp.Config;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.SectionType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -85,6 +86,7 @@ public abstract class AbstractStorageTest {
     @Test
     public void get() throws Exception {
         assertGet(RESUME_1);
+        Resume r = RESUME_1;
     }
 
     @Test(expected = NotExistStorageException.class)

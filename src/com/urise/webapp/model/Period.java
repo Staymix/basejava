@@ -4,6 +4,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.urise.webapp.util.LocalDateAdapter;
 import com.urise.webapp.util.LocalDateAdapterJson;
 
+import javax.swing.text.Position;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -17,6 +18,8 @@ import static com.urise.webapp.util.DateUtil.NOW;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Period implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    public static final Period EMPTY = new Period();
     @JsonAdapter(LocalDateAdapterJson.class)
     @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate startDate;
@@ -27,6 +30,15 @@ public class Period implements Serializable {
     private String description;
 
     public Period() {
+    }
+
+    public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
+        Objects.requireNonNull(title, "title must not be null");
+        Objects.requireNonNull(description, "description must not be null");
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.title = title;
+        this.description = description;
     }
 
     public Period(int startYear, Month startMonth, String title, String description) {
