@@ -27,13 +27,13 @@ public class ResumeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
             request.setAttribute("resumes", storage.getAllSorted());
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
+        String uuid = request.getParameter("uuid");
         Resume r;
         switch (action) {
             case "delete":
@@ -124,14 +124,15 @@ public class ResumeServlet extends HttpServlet {
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        r.addSection(type, new ListSection(value.split("\\n")));
+                        r.addSection(type, new ListSection(value.replaceAll("(?m)^[ \t]*\r?\n", "")
+                                .split("\\n")));
                         break;
                     case EDUCATION:
                     case EXPERIENCE:
                         List<Organization> organizations = new ArrayList<>();
                         for (int i = 0; i < values.length; i++) {
                             String name = values[i];
-                            if (name != null || name.trim().length() != 0) {
+                            if (name != null) {
                                 List<Period> periods = new ArrayList<>();
                                 String count = type.name() + i;
                                 String[] startDates = request.getParameterValues(count + "startDate");
@@ -139,7 +140,7 @@ public class ResumeServlet extends HttpServlet {
                                 String[] titles = request.getParameterValues(count + "title");
                                 String[] descriptions = request.getParameterValues(count + "description");
                                 for (int j = 0; j < titles.length; j++) {
-                                    if (titles[j] != null || titles[j].trim().length() != 0) {
+                                    if (titles[j] != null) {
                                         periods.add(new Period(DateUtil.parse(startDates[j]), DateUtil.parse(endDates[j]),
                                                 titles[j], descriptions[j]));
                                     }
