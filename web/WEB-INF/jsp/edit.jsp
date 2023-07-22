@@ -47,6 +47,13 @@
                             <dd><input type="text" name="${type}" size=75 value="${org.name}"></dd>
                         </dl>
                         <c:forEach var="period" items="${org.periods}" varStatus="counter">
+                                <dt>Период с:</dt>
+                                <dd><input type="text" name="${type}${counter.index}startDate" size=75 value="${DateUtil.format(period.startDate)}" placeholder="yyyy-MM-dd"></dd>
+                            </dl>
+                            <dl>
+                                <dt>Период до:</dt>
+                                <dd><input type="text" name="${type}${counter.index}endDate" size=75 value="${DateUtil.format(period.endDate)}" placeholder="yyyy-MM-dd"></dd>
+                            </dl>
                             <dl>
                                 <dt>Должность:</dt>
                                 <dd><input type="text" name="${type}${counter.index}title" size=75 value="${period.title}"></dd>
@@ -56,13 +63,6 @@
                                 <dd><input type="text" name="${type}${counter.index}description" size=75 value="${period.description}"></dd>
                             </dl>
                             <dl>
-                                <dt>Период с:</dt>
-                                <dd><input type="text" name="${type}${counter.index}startDate" size=75 value="${DateUtil.format(period.startDate)}"></dd>
-                            </dl>
-                            <dl>
-                                <dt>Период до:</dt>
-                                <dd><input type="text" name="${type}${counter.index}endDate" size=75 value="${DateUtil.format(period.endDate)}"></dd>
-                            </dl>
                         </c:forEach>
                     </c:forEach>
                 </c:when>
